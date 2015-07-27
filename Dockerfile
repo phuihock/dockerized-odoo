@@ -3,8 +3,8 @@ MAINTAINER Chang Phui-Hock <phuihock@codekaki.com>
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH=/opt/openerp/env/bin:$PATH
 EXPOSE 8069
+VOLUME /opt/openerp/conf
 VOLUME /opt/openerp/extras
-VOLUME /opt/openerp/openerp-server.conf
 
 WORKDIR /opt/openerp
 
@@ -38,4 +38,4 @@ USER codekaki
 RUN virtualenv --system-site-packages env && . env/bin/activate && pip install --allow-all-external --allow-unverified PIL .
 
 ENTRYPOINT ["/opt/openerp/openerp-server"]
-CMD ["-c", "openerp-server.conf"]
+CMD ["-c", "conf/openerp-server.conf"]

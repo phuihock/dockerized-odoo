@@ -2,9 +2,9 @@
 Source code is hosted at [https://github.com/phuihock/dockerized-odoo](https://github.com/phuihock/dockerized-odoo).
 
 ## How to Use This Image
-1. Configuration file is changed by passing a substitute as volume for /opt/openerp/openerp-server.conf. Example:
+1. Configuration file can be changed by passing setting the directory containing openerp-server.conf as volume to the container. Example:
 
-		-v `pwd`/my.conf:/opt/openerp/openerp-server.conf
+		-v `pwd`/conf:/opt/openerp/conf
 
 1. Addons can be added passed as volume to /opt/openerp/extras. Example:
 
@@ -22,7 +22,7 @@ Source code is hosted at [https://github.com/phuihock/dockerized-odoo](https://g
 
 ## Complete Example
 
-	$ docker run --rm -v `pwd`/my.conf:/opt/openerp/openerp-server.conf -v `pwd`/extras:/opt/openerp/extras --name openerp --add-host postgres:172.17.42.1 -p 8069:8069 phuihock/openerp:7.0
+	$ docker run --rm -v `pwd`/conf:/opt/openerp/conf -v `pwd`/extras:/opt/openerp/extras --name openerp --add-host postgres:172.17.42.1 -p 8069:8069 phuihock/odoo:7.0
 
 ## How to Build This Image
 
