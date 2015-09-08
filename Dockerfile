@@ -9,7 +9,7 @@ VOLUME /opt/openerp/extras
 WORKDIR /opt/openerp
 
 RUN echo "UTC" > /etc/timezone && dpkg-reconfigure tzdata
-RUN apt-get install -y\
+RUN apt-get update && apt-get install -y\
  build-essential\
  libjpeg8\
  libjpeg8-dev\
@@ -32,7 +32,8 @@ RUN apt-get install -y\
  apt-get autoclean
 
 COPY odoo .
-RUN useradd -m -d /opt/openerp -s /bin/bash -G www-data codekaki
+COPY conf conf
+RUN useradd -d /opt/openerp -s /bin/bash -G www-data codekaki
 RUN chown -R codekaki:codekaki .
 USER codekaki
 RUN virtualenv --system-site-packages env && . env/bin/activate && pip install --allow-all-external --allow-unverified PIL .
