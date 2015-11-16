@@ -1,26 +1,19 @@
-FROM phuihock/ubuntu:14.04.2_u150724.232741
+FROM ubuntu:14.04
 MAINTAINER Chang Phui-Hock <phuihock@codekaki.com>
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH=/opt/openerp/env/bin:$PATH
-EXPOSE 8069
-VOLUME /opt/openerp/conf
-VOLUME /opt/openerp/extras
+ENV PATH=/opt/odoo/env/bin:$PATH
+RUN groupadd -r codekaki && useradd -r -g codekaki -m -d /opt/odoo codekaki
 
-WORKDIR /opt/openerp
-
-RUN echo "UTC" > /etc/timezone && dpkg-reconfigure tzdata
-RUN apt-get update && apt-get install -y\
+RUN echo "Asia/Kuala_Lumpur" > /etc/timezone && dpkg-reconfigure tzdata
+RUN apt-get update && apt-get install -y --no-install-recommends \
  build-essential\
- libjpeg8\
+ git\
+ ca-certificates\
  libjpeg8-dev\
+ libjpeg8\
  libldap2-dev\
  libsasl2-dev\
  libxslt1.1\
- libzmq3\
- libzmq3-dev\
- zlib1g\
- zlib1g-dev\
- python\
  python-imaging\
  python-lxml\
  python-openid\
@@ -28,15 +21,30 @@ RUN apt-get update && apt-get install -y\
  python-pychart\
  python-simplejson\
  python-virtualenv\
- python2.7-dev;\
- apt-get autoclean
+ python2.7-dev\
+ python\
+ wget\
+ zlib1g-dev\
+ zlib1g\
+ && apt-get clean\
+ && rm -rf /var/lib/apt/lists/*
 
-COPY odoo .
-COPY conf conf
-RUN useradd -d /opt/openerp -s /bin/bash -G www-data codekaki
-RUN chown -R codekaki:codekaki .
+WORKDIR /opt/odoo
 USER codekaki
-RUN virtualenv --system-site-packages env && . env/bin/activate && pip install --allow-all-external --allow-unverified PIL .
 
-ENTRYPOINT ["/opt/openerp/openerp-server"]
+ENV CID=2326bb7
+RUN mkdir 7.0 &&\
+ wget http://172.17.0.1:8000/odoo/$CID.tar.gz &&\
+ wget -P conf http://172.17.0.1:8000/conf/openerp-server.conf &&\
+ tar xzf $CID.tar.gz -C 7.0 &&\
+ rm $CID.tar.gz
+
+RUN virtualenv --system-site-packages env &&\
+ . env/bin/activate &&\
+ pip install --allow-all-external --allow-unverified PIL 7.0/
+
+VOLUME ["/opt/odoo/extras", "/opt/odoo/conf"]
+
+EXPOSE 8069 8071
+ENTRYPOINT ["/opt/odoo/7.0/openerp-server"]
 CMD ["-c", "conf/openerp-server.conf"]
